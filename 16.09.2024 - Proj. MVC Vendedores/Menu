@@ -1,0 +1,126 @@
+class Program
+{
+    static void Main(string[] args)
+    {
+        Vendedores vendedores = new Vendedores();
+        int opcao;
+
+        do
+        {
+            Console.WriteLine("\n0. Sair");
+            Console.WriteLine("1. Cadastrar vendedor");
+            Console.WriteLine("2. Consultar vendedor");
+            Console.WriteLine("3. Excluir vendedor");
+            Console.WriteLine("4. Registrar venda");
+            Console.WriteLine("5. Listar vendedores");
+            Console.Write("Escolha uma opção: ");
+            opcao = int.Parse(Console.ReadLine());
+
+            switch (opcao)
+            {
+                case 1:
+                    if (vendedores.qtde < 10)
+                    {
+                        Console.Write("ID do Vendedor: ");
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Write("Nome do Vendedor: ");
+                        string nome = Console.ReadLine();
+                        Console.Write("Percentual de Comissão: ");
+                        double percComissao = double.Parse(Console.ReadLine());
+
+                        Vendedor novoVendedor = new Vendedor(id, nome, percComissao);
+                        if (vendedores.addVendedor(novoVendedor))
+                        {
+                            Console.WriteLine("Vendedor cadastrado com sucesso!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Erro ao cadastrar vendedor.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Número máximo de vendedores atingido.");
+                    }
+                    break;
+
+                case 2:
+                    Console.Write("ID do Vendedor a ser consultado: ");
+                    int idConsulta = int.Parse(Console.ReadLine());
+                    Vendedor vendedorConsultado = vendedores.searchVendedor(idConsulta);
+                    if (vendedorConsultado != null)
+                    {
+                        Console.WriteLine($"ID: {vendedorConsultado.Id}, Nome: {vendedorConsultado.Nome}, " +
+                                          $"Valor Total das Vendas: {vendedorConsultado.valorVendas():C}, " +
+                                          $"Valor da Comissão: {vendedorConsultado.valorComissao():C}, " +
+                                          $"Valor Médio das Vendas: {vendedorConsultado.valorMedioVendas():C}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Vendedor não encontrado.");
+                    }
+                    break;
+
+                case 3:
+                    Console.Write("ID do Vendedor a ser excluído: ");
+                    int idExcluir = int.Parse(Console.ReadLine());
+                    Vendedor vendedorExcluir = vendedores.searchVendedor(idExcluir);
+                    if (vendedorExcluir != null)
+                    {
+                        if (vendedores.delVendedor(vendedorExcluir))
+                        {
+                            Console.WriteLine("Vendedor excluído com sucesso!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Não é possível excluir. O vendedor possui vendas registradas.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Vendedor não encontrado.");
+                    }
+                    break;
+
+                case 4:
+                    Console.Write("ID do Vendedor: ");
+                    int idVendedorVenda = int.Parse(Console.ReadLine());
+                    Vendedor vendedorParaVenda = vendedores.searchVendedor(idVendedorVenda);
+                    if (vendedorParaVenda != null)
+                    {
+                        Console.Write("Dia da venda (1-31): ");
+                        int dia = int.Parse(Console.ReadLine());
+                        Console.Write("Quantidade: ");
+                        int qtde = int.Parse(Console.ReadLine());
+                        Console.Write("Valor total: ");
+                        double valor = double.Parse(Console.ReadLine());
+
+                        Venda novaVenda = new Venda(qtde, valor);
+                        vendedorParaVenda.registrarVenda(dia, novaVenda);
+                        Console.WriteLine("Venda registrada com sucesso!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Vendedor não encontrado.");
+                    }
+                    break;
+
+                case 5:
+                    Console.WriteLine("Lista de Vendedores:");
+                    vendedores.listarVendedores();
+                    Console.WriteLine($"Valor total das vendas: {vendedores.valorVendas():C}");
+                    Console.WriteLine($"Valor total das comissões: {vendedores.valorComissao():C}");
+                    break;
+
+                case 0:
+                    Console.WriteLine("Saindo...");
+                    break;
+
+                default:
+                    Console.WriteLine("Opção inválida!");
+                    break;
+            }
+
+        } while (opcao != 0);
+    }
+}
