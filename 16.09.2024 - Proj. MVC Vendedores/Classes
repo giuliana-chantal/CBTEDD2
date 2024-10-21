@@ -1,0 +1,152 @@
+using System;
+
+public class Venda
+{
+    private int qtde;
+    private double valor;
+
+    public Venda(int qtde, double valor)
+    {
+        this.qtde = qtde;
+        this.valor = valor;
+    }
+
+    public double valorMedio()
+    {
+        return qtde > 0 ? valor / qtde : 0;
+    }
+}
+
+public class Vendedor
+{
+    private int id;
+    private string nome;
+    private double percComissao;
+    private Venda[] asVendas = new Venda[31]; // Supondo 31 dias no mês
+    private int vendasCount = 0;
+
+    public Vendedor(int id, string nome, double percComissao)
+    {
+        this.id = id;
+        this.nome = nome;
+        this.percComissao = percComissao;
+    }
+
+    public void registrarVenda(int dia, Venda venda)
+    {
+        if (dia < 1 || dia > 31 || vendasCount >= 31)
+            throw new ArgumentException("Dia inválido ou limite de vendas atingido.");
+        asVendas[dia - 1] = venda;
+        vendasCount++;
+    }
+
+    public double valorVendas()
+    {
+        double total = 0;
+        foreach (var venda in asVendas)
+        {
+            if (venda != null)
+                total += venda.valor;
+        }
+        return total;
+    }
+
+    public double valorComissao()
+    {
+        return valorVendas() * percComissao / 100;
+    }
+
+    public double valorMedioVendas()
+    {
+        double total = 0;
+        int diasComVendas = 0;
+
+        foreach (var venda in asVendas)
+        {
+            if (venda != null)
+            {
+                total += venda.valor;
+                diasComVendas++;
+            }
+        }
+
+        return diasComVendas > 0 ? total / diasComVendas : 0;
+    }
+
+    public int Id => id;
+    public string Nome => nome;
+    public double PercComissao => percComissao;
+}
+
+public class Vendedores
+{
+    private Vendedor[] osVendedores = new Vendedor[10]; // Máximo de 10 vendedores
+    private int qtde = 0;
+
+    public bool addVendedor(Vendedor v)
+    {
+        if (qtde < 10)
+        {
+            osVendedores[qtde++] = v;
+            return true;
+        }
+        return false;
+    }
+
+    public bool delVendedor(Vendedor v)
+    {
+        int index = Array.IndexOf(osVendedores, v);
+        if (index >= 0 && osVendedores[index].valorVendas() == 0)
+        {
+            osVendedores[index] = null;
+            qtde--;
+            return true;
+        }
+        return false;
+    }
+
+    public Vendedor searchVendedor(int id)
+    {
+        foreach (var vendedor in osVendedores)
+        {
+            if (vendedor != null && vendedor.Id == id)
+                return vendedor;
+        }
+        return null;
+    }
+
+    public double valorVendas()
+    {
+        double total = 0;
+        foreach (var vendedor in osVendedores)
+        {
+            if (vendedor != null)
+                total += vendedor.valorVendas();
+        }
+        return total;
+    }
+
+    public double valorComissao()
+    {
+        double total = 0;
+        foreach (var vendedor in osVendedores)
+        {
+            if (vendedor != null)
+                total += vendedor.valorComissao();
+        }
+        return total;
+    }
+
+    public void listarVendedores()
+    {
+        foreach (var vendedor in osVendedores)
+        {
+            if (vendedor != null)
+            {
+                Console.WriteLine($"ID: {vendedor.Id}, Nome: {vendedor.Nome}, " +
+                                  $"Valor Total das Vendas: {vendedor.valorVendas():C}, " +
+                                  $"Valor da Comissão: {vendedor.valorComissao():C}");
+            }
+        }
+    }
+}
