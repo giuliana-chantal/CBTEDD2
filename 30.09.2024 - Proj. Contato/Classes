@@ -1,0 +1,102 @@
+using System;
+using System.Collections.Generic;
+
+public class Data
+{
+    private int dia;
+    private int mes;
+    private int ano;
+
+    public void setData(int dia, int mes, int ano)
+    {
+        this.dia = dia;
+        this.mes = mes;
+        this.ano = ano;
+    }
+
+    public override string ToString()
+    {
+        return $"{dia:D2}/{mes:D2}/{ano}";
+    }
+}
+
+public class Telefone
+{
+    public string Tipo { get; set; }
+    public string Numero { get; set; }
+    public bool Principal { get; set; }
+}
+
+public class Contato
+{
+    public string Email { get; set; }
+    public string Nome { get; set; }
+    public Data DtNasc { get; set; }
+    private List<Telefone> telefones = new List<Telefone>();
+
+    public void adicionarTelefone(Telefone t)
+    {
+        telefones.Add(t);
+    }
+
+    public string getTelefonePrincipal()
+    {
+        var telefonePrincipal = telefones.Find(t => t.Principal);
+        return telefonePrincipal?.Numero ?? "Nenhum telefone principal";
+    }
+
+    public override string ToString()
+    {
+        return $"Nome: {Nome}, Email: {Email}, Data de Nascimento: {DtNasc}, Telefone Principal: {getTelefonePrincipal()}";
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Contato contato)
+        {
+            return this.Email == contato.Email; // ou outra lógica para igualdade
+        }
+        return false;
+    }
+}
+
+public class Contatos
+{
+    private List<Contato> agenda = new List<Contato>();
+
+    public bool adicionar(Contato c)
+    {
+        if (agenda.Contains(c)) return false; // já existe
+        agenda.Add(c);
+        return true;
+    }
+
+    public Contato pesquisar(Contato c)
+    {
+        return agenda.Find(contato => contato.Equals(c));
+    }
+
+    public bool alterar(Contato c)
+    {
+        var contato = pesquisar(c);
+        if (contato != null)
+        {
+            contato.Email = c.Email; // pode adicionar outras propriedades que deseja alterar
+            return true;
+        }
+        return false;
+    }
+
+    public bool remover(Contato c)
+    {
+        return agenda.Remove(c);
+    }
+
+    public void listar()
+    {
+        foreach (var contato in agenda)
+        {
+            Console.WriteLine(contato);
+        }
+    }
+}
