@@ -1,0 +1,30 @@
+public class Guiche
+{
+    public int id { get; private set; }
+    private Queue<Senha> atendimentos;
+
+    public Guiche()
+    {
+        atendimentos = new Queue<Senha>();
+        id = 0;
+    }
+
+    public Guiche(int id)
+    {
+        atendimentos = new Queue<Senha>();
+        this.id = id;
+    }
+
+    public bool chamar(Queue<Senha> filaSenhas)
+    {
+        Senha senha = filaSenhas.Dequeue();
+        if (senha != null)
+        {
+            atendimentos.Enqueue(senha);
+            senha.dataAtend = DateTime.Now.Date;
+            senha.horaAtend = DateTime.Now;
+            return true;
+        }
+        return false;
+    }
+}
