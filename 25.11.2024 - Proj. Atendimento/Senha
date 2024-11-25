@@ -1,0 +1,28 @@
+using System;
+using System.Collections.Generic;
+
+public class Senha
+{
+    public int id { get; private set; }
+    public DateTime dataGerac { get; private set; }
+    public DateTime horaGerac { get; private set; }
+    public DateTime? dataAtend { get; private set; }
+    public DateTime? horaAtend { get; private set; }
+
+    public Senha(int id)
+    {
+        this.id = id;
+        this.dataGerac = DateTime.Now.Date;
+        this.horaGerac = DateTime.Now;
+    }
+
+    public string dadosParciais()
+    {
+        return $"{id}-{dataGerac.ToShortDateString()}-{horaGerac.ToShortTimeString()}";
+    }
+
+    public string dadosCompletos()
+    {
+        return $"{id}-{dataGerac.ToShortDateString()}-{horaGerac.ToShortTimeString()}-{dataAtend?.ToShortDateString()}-{horaAtend?.ToShortTimeString()}";
+    }
+}
