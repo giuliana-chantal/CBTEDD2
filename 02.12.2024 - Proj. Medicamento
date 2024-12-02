@@ -1,0 +1,242 @@
+using System;
+using System.Collections.Generic;
+
+namespace ProjetoMedicamento
+{
+    // Classe Lote
+    public class Lote
+    {
+        public int Id { get; set; }
+        public int Qtde { get; set; }
+        public DateTime Venc { get; set; }
+
+        public Lote() { }
+
+        public Lote(int id, int qtde, DateTime venc)
+        {
+            Id = id;
+            Qtde = qtde;
+            Venc = venc;
+        }
+
+        public override string ToString()
+        {
+            return $"{Id}-{Qtde}-{Venc.ToString("yyyy-MM-dd")}";
+        }
+    }
+
+    // Classe Medicamento
+    public class Medicamento
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public string Laboratorio { get; set; }
+        public Queue<Lote> Lotes { get; set; }
+
+        public Medicamento()
+        {
+            Lotes = new Queue<Lote>();
+        }
+
+        public Medicamento(int id, string nome, string laboratorio) : this()
+        {
+            Id = id;
+            Nome = nome;
+            Laboratorio = laboratorio;
+        }
+
+        public int QtdeDisponivel()
+        {
+            int total = 0;
+            foreach (var lote in Lotes)
+            {
+                total += lote.Qtde;
+            }
+            return total;
+        }
+
+        public void Comprar(Lote lote)
+        {
+            Lotes.Enqueue(lote);
+        }
+
+        public bool Vender(int qtde)
+        {
+            int restante = qtde;
+            Queue<Lote> lotesTemp = new Queue<Lote>();
+
+            while (Lotes.Count > 0 && restante > 0)
+            {
+                Lote loteAtual = Lotes.Dequeue();
+                if (loteAtual.Qtde <= restante)
+                {
+                    restante -= loteAtual.Qtde;
+                }
+                else
+                {
+                    loteAtual.Qtde -= restante;
+                    restante = 0;
+                    lotesTemp.Enqueue(loteAtual);
+                }
+            }
+
+            // Reabastece a fila com os lotes que sobraram
+            foreach (var lote in lotesTemp)
+            {
+                Lotes.Enqueue(lote);
+            }
+
+            return restante == 0;
+        }
+
+        public override string ToString()
+        {
+            return $"{Id}-{Nome}-{Laboratorio}-{QtdeDisponivel()}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Medicamento medicamento && medicamento.Id == this.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+    }
+
+    // Classe Medicamentos (gerenciadora de Medicamentos)
+    public class Medicamentos
+    {
+        private List<Medicamento> listaMedicamentos;
+
+        public Medicamentos()
+        {
+            listaMedicamentos = new List<Medicamento>();
+        }
+
+        public void Adicionar(Medicamento medicamento)
+        {
+            listaMedicamentos.Add(medicamento);
+        }
+
+        public bool Deletar(Medicamento medicamento)
+        {
+            if (medicamento.QtdeDisponivel() == 0)
+            {
+                return listaMedicamentos.Remove(medicamento);
+            }
+            return false;
+        }
+
+        public Medicamento Pesquisar(Medicamento medicamento)
+        {
+            return listaMedicamentos.Find(m => m.Id == medicamento.Id) ?? new Medicamento();
+        }
+
+        public void ListarMedicamentos()
+        {
+            foreach (var medicamento in listaMedicamentos)
+            {
+                Console.WriteLine(medicamento.ToString());
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Medicamentos medicamentos = new Medicamentos();
+
+            bool continuar = true;
+            while (continuar)
+            {
+                Console.WriteLine("Selecione uma opção:");
+                Console.WriteLine("0. Finalizar processo");
+                Console.WriteLine("1. Cadastrar medicamento");
+                Console.WriteLine("2. Consultar medicamento (sintético: informar dados)");
+                Console.WriteLine("3. Consultar medicamento (analítico: informar dados + lotes)");
+                Console.WriteLine("4. Comprar medicamento (cadastrar lote)");
+                Console.WriteLine("5. Vender medicamento (abater do lote mais antigo)");
+                Console.WriteLine("6. Listar medicamentos (informando dados sintéticos)");
+
+                int opcao = int.Parse(Console.ReadLine());
+                switch (opcao)
+                {
+                    case 0:
+                        continuar = false;
+                        break;
+
+                    case 1: // Cadastrar medicamento
+                        Console.Write("Digite o ID do medicamento: ");
+                        int idMedicamento = int.Parse(Console.ReadLine());
+                        Console.Write("Digite o nome do medicamento: ");
+                        string nome = Console.ReadLine();
+                        Console.Write("Digite o laboratório: ");
+                        string laboratorio = Console.ReadLine();
+                        Medicamento medicamento = new Medicamento(idMedicamento, nome, laboratorio);
+                        medicamentos.Adicionar(medicamento);
+                        Console.WriteLine("Medicamento cadastrado com sucesso!");
+                        break;
+
+                    case 2: // Consultar medicamento (sintético)
+                        Console.Write("Digite o ID do medicamento: ");
+                        int idConsulta = int.Parse(Console.ReadLine());
+                        Medicamento medicamentoConsulta = medicamentos.Pesquisar(new Medicamento { Id = idConsulta });
+                        Console.WriteLine("Medicamento encontrado: " + medicamentoConsulta.ToString());
+                        break;
+
+                    case 3: // Consultar medicamento (analítico)
+                        Console.Write("Digite o ID do medicamento: ");
+                        int idConsultaAnalitica = int.Parse(Console.ReadLine());
+                        Medicamento medicamentoConsultaAnalitica = medicamentos.Pesquisar(new Medicamento { Id = idConsultaAnalitica });
+                        Console.WriteLine("Medicamento encontrado: " + medicamentoConsultaAnalitica.ToString());
+                        foreach (var lote in medicamentoConsultaAnalitica.Lotes)
+                        {
+                            Console.WriteLine("Lote: " + lote.ToString());
+                        }
+                        break;
+
+                    case 4: // Comprar medicamento (cadastrar lote)
+                        Console.Write("Digite o ID do medicamento: ");
+                        int idMedicamentoCompra = int.Parse(Console.ReadLine());
+                        Medicamento medicamentoCompra = medicamentos.Pesquisar(new Medicamento { Id = idMedicamentoCompra });
+                        Console.Write("Digite o ID do lote: ");
+                        int idLote = int.Parse(Console.ReadLine());
+                        Console.Write("Digite a quantidade do lote: ");
+                        int qtdeLote = int.Parse(Console.ReadLine());
+                        Console.Write("Digite a data de vencimento do lote (yyyy-mm-dd): ");
+                        DateTime vencimento = DateTime.Parse(Console.ReadLine());
+                        Lote lote = new Lote(idLote, qtdeLote, vencimento);
+                        medicamentoCompra.Comprar(lote);
+                        Console.WriteLine("Lote comprado e cadastrado com sucesso!");
+                        break;
+
+                    case 5: // Vender medicamento (abater do lote mais antigo)
+                        Console.Write("Digite o ID do medicamento: ");
+                        int idMedicamentoVenda = int.Parse(Console.ReadLine());
+                        Medicamento medicamentoVenda = medicamentos.Pesquisar(new Medicamento { Id = idMedicamentoVenda });
+                        Console.Write("Digite a quantidade a ser vendida: ");
+                        int qtdeVenda = int.Parse(Console.ReadLine());
+                        bool vendaRealizada = medicamentoVenda.Vender(qtdeVenda);
+                        if (vendaRealizada)
+                            Console.WriteLine("Venda realizada com sucesso!");
+                        else
+                            Console.WriteLine("Não há quantidade suficiente para a venda.");
+                        break;
+
+                    case 6: // Listar medicamentos (informando dados sintéticos)
+                        medicamentos.ListarMedicamentos();
+                        break;
+
+                    default:
+                        Console.WriteLine("Opção inválida. Tente novamente.");
+                        break;
+                }
+            }
+
+            Console.WriteLine("Processo finalizado.");
+        }
+    }
+}
