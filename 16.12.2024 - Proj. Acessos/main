@@ -1,0 +1,73 @@
+using System;
+
+public class Program
+{
+    public static void Main()
+    {
+        Cadastro cadastro = new Cadastro();
+        while (true)
+        {
+            Console.WriteLine("0. Sair");
+            Console.WriteLine("1. Cadastrar ambiente");
+            Console.WriteLine("2. Consultar ambiente");
+            Console.WriteLine("3. Excluir ambiente");
+            Console.WriteLine("4. Cadastrar usuario");
+            Console.WriteLine("5. Consultar usuario");
+            Console.WriteLine("6. Excluir usuario");
+            Console.WriteLine("7. Conceder permissão de acesso ao usuario");
+            Console.WriteLine("8. Revogar permissão de acesso ao usuario");
+            Console.WriteLine("9. Registrar acesso");
+            Console.WriteLine("10. Consultar logs de acesso");
+
+            int opcao = int.Parse(Console.ReadLine());
+
+            if (opcao == 0)
+            {
+                cadastro.Upload();
+                break;
+            }
+            else if (opcao == 1)
+            {
+                // Implementar cadastro de ambiente
+            }
+            else if (opcao == 2)
+            {
+                // Implementar consulta de ambiente
+            }
+            else if (opcao == 3)
+            {
+                // Implementar exclusão de ambiente
+            }
+            else if (opcao == 4)
+            {
+                // Implementar cadastro de usuário
+            }
+            else if (opcao == 5)
+            {
+                // Implementar consulta de usuário
+            }
+            else if (opcao == 6)
+            {
+                // Implementar exclusão de usuário
+            }
+            else if (opcao == 7)
+            {
+                // Implementar concessão de permissão
+            }
+            else if (opcao == 8)
+            {
+                // Implementar revogação de permissão
+            }
+            else if (opcao == 9)
+            {
+                // Implementar registro de acesso
+            }
+            else if (opcao == 10)
+            {
+                // Implementar consulta de logs
+            }
+
+            cadastro.Download();
+        }
+    }
+}
