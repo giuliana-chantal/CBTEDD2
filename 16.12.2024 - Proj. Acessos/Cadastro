@@ -1,0 +1,59 @@
+using System.Collections.Generic;
+
+public class Cadastro
+{
+    public List<Usuario> Usuarios { get; set; }
+    public List<Ambiente> Ambientes { get; set; }
+
+    public Cadastro()
+    {
+        Usuarios = new List<Usuario>();
+        Ambientes = new List<Ambiente>();
+    }
+
+    public void AdicionarUsuario(Usuario usuario)
+    {
+        Usuarios.Add(usuario);
+    }
+
+    public bool RemoverUsuario(Usuario usuario)
+    {
+        if (usuario.Ambientes.Count == 0)
+        {
+            Usuarios.Remove(usuario);
+            return true;
+        }
+        return false;
+    }
+
+    public Usuario PesquisarUsuario(int id)
+    {
+        return Usuarios.Find(u => u.Id == id);
+    }
+
+    public void AdicionarAmbiente(Ambiente ambiente)
+    {
+        Ambientes.Add(ambiente);
+    }
+
+    public bool RemoverAmbiente(Ambiente ambiente)
+    {
+        Ambientes.Remove(ambiente);
+        return true;
+    }
+
+    public Ambiente PesquisarAmbiente(int id)
+    {
+        return Ambientes.Find(a => a.Id == id);
+    }
+
+    public void Upload()
+    {
+        // Implementar a persistência dos dados
+    }
+
+    public void Download()
+    {
+        // Implementar a carga dos dados
+    }
+}
